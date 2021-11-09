@@ -1,3 +1,4 @@
+Package installs:
 sudo pip3 install opencv-python
 sudo pip3 install smbus
 sudo pip3 install imutils
@@ -8,4 +9,6 @@ sudo pip3 install adafruit_motor
 sudo raspi-config
 enable i2c & camera
 
+
+Command for Starting program:
 python3 pan_tilt_tracking.py --cascade haarcascade_frontalface_default.xml
