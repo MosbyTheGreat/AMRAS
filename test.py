@@ -4,7 +4,6 @@ import adafruit_motor.servo
 import RPi.GPIO as GPIO
 
 # Relays
-
 GPIO.setmode(GPIO.BCM)
 
 Pin1 = 24
@@ -16,6 +15,11 @@ GPIO.setup(Pin1, GPIO.OUT)
 GPIO.setup(Pin2, GPIO.OUT)
 GPIO.setup(Pin3, GPIO.OUT)
 GPIO.setup(Pin4, GPIO.OUT)
+
+GPIO.output(Pin1, GPIO.LOW)
+GPIO.output(Pin2, GPIO.LOW)
+GPIO.output(Pin3, GPIO.LOW)
+GPIO.output(Pin4, GPIO.LOW)
 
 GPIO.output(Pin1, GPIO.HIGH)
 time.sleep(2.0)
@@ -52,14 +56,5 @@ kit.servo[0].angle = 180
 kit.servo[1].angle = 180
 time.sleep(2.0)
 
-kit.servo[0].angle = 270
-kit.servo[1].angle = 270
-time.sleep(2.0)
-
-kit.servo[0].angle = 360
-kit.servo[1].angle = 360
-time.sleep(2.0)
-
-kit.servo[0].angle = 720
-kit.servo[1].angle = 720
-time.sleep(2.0)
+kit.servo[0].angle = 90
+kit.servo[1].angle = 90
