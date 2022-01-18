@@ -11,11 +11,11 @@ class PID:
 
     def initialize(self):
         # intialize the current and previous time
-        self.currTime = time.time()
-        self.prevTime = self.currTime
+        self.curr_time = time.time()
+        self.prev_time = self.curr_time
 
         # initialize the previous error
-        self.prevError = 0
+        self.prev_error = 0
 
         # initialize the term result variables
         self.cP = 0
@@ -27,24 +27,24 @@ class PID:
         time.sleep(sleep)
 
         # grab the current time and calculate delta time
-        self.currTime = time.time()
-        deltaTime = self.currTime - self.prevTime
+        self.curr_time = time.time()
+        delta_time = self.curr_time - self.prev_time
 
         # delta error
-        deltaError = error - self.prevError
+        delta_error = error - self.prev_error
 
         # proportional term
         self.cP = error
 
         # integral term
-        self.cI += error * deltaTime
+        self.cI += error * delta_time
 
         # derivative term and prevent divide by zero
-        self.cD = (deltaError / deltaTime) if deltaTime > 0 else 0
+        self.cD = (delta_error / delta_time) if delta_time > 0 else 0
 
         # save previous time and error for the next update
-        self.prevTime = self.currTime
-        self.prevError = error
+        self.prev_time = self.curr_time
+        self.prev_error = error
 
         # sum the terms and return
         return sum([
