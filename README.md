@@ -1,6 +1,5 @@
-# AMRAS <div style="text-align: right"> [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MosbyTheGreat_AMRAS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MosbyTheGreat_AMRAS)
-Anti-Mitbewohner-Raketen-Abwehr-System </div>
-(engl. Anti Roommate Rocket Defense System)
+# AMRAS <style>[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MosbyTheGreat_AMRAS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MosbyTheGreat_AMRAS) {text-align: right}</style>
+Anti-Mitbewohner-Raketen-Abwehr-System (engl. Anti Roommate Rocket Defense System)
 
 An automated turret, which uses a combination of a Raspberry Pi, a camera, some servos, trafos and methylated spirits
 to propell "rockets" into anyones face who dares to enter it's vicinity.
