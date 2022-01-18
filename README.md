@@ -1,4 +1,4 @@
-# AMRAS
+# AMRAS [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MosbyTheGreat_AMRAS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MosbyTheGreat_AMRAS)
 Anti-Mitbewohner-Raketen-Abwehr-System
 (engl. Anti Roommate Rocket Defense System)
 
@@ -11,6 +11,5 @@ Credit to Adrian Rosebrock, PhD, from pyimagesearch.com for this wonderful tutor
 https://www.pyimagesearch.com/2019/04/01/pan-tilt-face-tracking-with-a-raspberry-pi-and-opencv/
 
 NOTE: This is currently WIP with major parts still missing from the repository.
-NOTE2: Project is put on hold, until I get new parts. I trashed my camera module.
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MosbyTheGreat_AMRAS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MosbyTheGreat_AMRAS)
+NOTE2: Project is put on hold, until I get new parts. I trashed my camera module.
