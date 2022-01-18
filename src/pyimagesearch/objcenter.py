@@ -4,11 +4,11 @@ import cv2
 
 
 class ObjCenter:
-    def __init__(self, haarPath):
+    def __init__(self, haar_path):
         # load OpenCV's Haar cascade face detector
-        self.detector = cv2.CascadeClassifier(haarPath)
+        self.detector = cv2.CascadeClassifier(haar_path)
 
-    def update(self, frame, frameCenter):
+    def update(self, frame, frame_center):
         # convert the frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -23,13 +23,13 @@ class ObjCenter:
             # use the coordinates to determine the center of the
             # face
             (x, y, w, h) = rects[0]
-            faceX = int(x + (w / 2.0))
-            faceY = int(y + (h / 2.0))
+            face_x = int(x + (w / 2.0))
+            face_y = int(y + (h / 2.0))
 
             # return the center (x, y)-coordinates of the face
-            print(str(faceX) + " " + str(faceY))
-            return (faceX, faceY), rects[0]
+            print(str(face_x) + " " + str(face_y))
+            return (face_x, face_y), rects[0]
 
         # otherwise no faces were found, so return the center of the
         # frame
-        return frameCenter, None
+        return frame_center, None

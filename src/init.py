@@ -56,7 +56,7 @@ def signal_handler(sig, frame):
     sys.exit()
 
 
-def obj_center(args, objX, objY, centerX, centerY):
+def obj_center(args, obj_x, obj_y, center_x, center_y):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -75,12 +75,12 @@ def obj_center(args, objX, objY, centerX, centerY):
         # calculate the center of the frame as this is where we will
         # try to keep the object
         (H, W) = frame.shape[:2]
-        centerX.value = W // 2
-        centerY.value = H // 2
+        center_x.value = W // 2
+        center_y.value = H // 2
 
         # find the object's location
-        objectLoc = obj.update(frame, (centerX.value, centerY.value))
-        ((objX.value, objY.value), rect) = objectLoc
+        object_loc = obj.update(frame, (center_x.value, center_y.value))
+        ((obj_x.value, obj_y.value), rect) = object_loc
 
         # extract the bounding box and draw it
         if rect is not None:
@@ -92,7 +92,7 @@ def obj_center(args, objX, objY, centerX, centerY):
         cv2.waitKey(1)
 
 
-def pid_process(output, p, i, d, objCoord, centerCoord):
+def pid_process(output, p, i, d, obj_coord, center_coord):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -103,7 +103,7 @@ def pid_process(output, p, i, d, objCoord, centerCoord):
     # loop indefinitely
     while True:
         # calculate the error
-        error = centerCoord.value - objCoord.value
+        error = center_coord.value - obj_coord.value
 
         # update the value
         output.value = p.update(error)
@@ -145,26 +145,26 @@ if __name__ == "__main__":
     # start a manager for managing process-safe variables
     with Manager() as manager:
         # set integer values for the object center (x, y)-coordinates
-        centerX = manager.Value("i", 0)
-        centerY = manager.Value("i", 0)
+        center_x = manager.Value("i", 0)
+        center_y = manager.Value("i", 0)
 
         # set integer values for the object's (x, y)-coordinates
-        objX = manager.Value("i", 0)
-        objY = manager.Value("i", 0)
+        obj_x = manager.Value("i", 0)
+        obj_y = manager.Value("i", 0)
 
         # pan and tilt values will be managed by independed PIDs
         pan = manager.Value("i", 0)
         tlt = manager.Value("i", 0)
 
         # set PID values for panning
-        panP = manager.Value("f", 0.09)
-        panI = manager.Value("f", 0.08)
-        panD = manager.Value("f", 0.002)
+        pan_p = manager.Value("f", 0.09)
+        pan_i = manager.Value("f", 0.08)
+        pan_d = manager.Value("f", 0.002)
 
         # set PID values for tilting
-        tiltP = manager.Value("f", 0.11)
-        tiltI = manager.Value("f", 0.10)
-        tiltD = manager.Value("f", 0.002)
+        tilt_p = manager.Value("f", 0.11)
+        tilt_i = manager.Value("f", 0.10)
+        tilt_d = manager.Value("f", 0.002)
 
         # we have 4 independent processes
         # 1. objectCenter  - finds/localizes the object
@@ -172,19 +172,19 @@ if __name__ == "__main__":
         # 3. tilting       - PID control loop determines tilting angle
         # 4. setServos     - drives the servos to proper angles based
         #                    on PID feedback to keep object in center
-        processObjectCenter = Process(target=obj_center, args=(args, objX, objY, centerX, centerY))
-        processPanning = Process(target=pid_process, args=(pan, panP, panI, panD, objX, centerX))
-        processTilting = Process(target=pid_process, args=(tlt, tiltP, tiltI, tiltD, objY, centerY))
-        processSetServos = Process(target=set_servos, args=(pan, tlt))
+        process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
+        process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
+        process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
+        process_set_servos = Process(target=set_servos, args=(pan, tlt))
 
         # start all 4 processes
-        processObjectCenter.start()
-        processPanning.start()
-        processTilting.start()
-        processSetServos.start()
+        process_object_center.start()
+        process_panning.start()
+        process_tilting.start()
+        process_set_servos.start()
 
         # join all 4 processes
-        processObjectCenter.join()
-        processPanning.join()
-        processTilting.join()
-        processSetServos.join()
+        process_object_center.join()
+        process_panning.join()
+        process_tilting.join()
+        process_set_servos.join()
