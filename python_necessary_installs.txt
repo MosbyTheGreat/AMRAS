@@ -9,4 +9,4 @@ sudo pip3 install adafruit_motor
 use 'sudo raspi-config' to go to raspberry pi configurantion and enable i2c & camera
 
 Command for Starting program:
-python3 init.py --cascade haarcascade_frontalface_default.xml
+python3 init_amras.py -c haarcascade_frontalface_default.xml
