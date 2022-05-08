@@ -31,7 +31,8 @@ https://www.amazon.de/gp/product/B07MC7L4PG/ref=ppx_yo_dt_b_search_asin_image?ie
 
 ## Credits
 
-Inspired by this video https://youtu.be/U4ndTDGhc1U
+Initially inspired by this video:  
+https://youtu.be/U4ndTDGhc1U
 
-Credit to Adrian Rosebrock, PhD, from pyimagesearch.com for this wonderful tutorial, which my face tracking code is based on.
+Credit to Adrian Rosebrock, PhD, from pyimagesearch.com for this wonderful tutorial, which my face tracking code is based on:  
 https://www.pyimagesearch.com/2019/04/01/pan-tilt-face-tracking-with-a-raspberry-pi-and-opencv/
