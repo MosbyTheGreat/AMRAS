@@ -9,6 +9,24 @@ to propell rubber rockets into anyones face who dares to enter it's vicinity.
 
 ![Screencap from the 3D Model in Fusion](./3D%20models/Fusion.png)
 
+## Parts List
+
+Raspberry Pi 3B (Good Luck finding one, but should also work with newer versions)  
+Camera:  
+https://de.aliexpress.com/item/32668508991.html  
+Servo Controller:  
+https://de.aliexpress.com/item/4000468996665.html  
+4x Transformer/Spark Generator:  
+https://de.aliexpress.com/item/32872820437.html  
+2x Servo:  
+https://de.aliexpress.com/item/32970493831.html  
+4 Band Relais:  
+https://de.aliexpress.com/item/4001363470793.html  
+Some Cables:  
+https://de.aliexpress.com/item/33060775595.html  
+Syringes to create Rockets out of:  
+https://www.amazon.de/gp/product/B07MC7L4PG/ref=ppx_yo_dt_b_search_asin_image?ie=UTF8&psc=1  
+
 Inspired by this video https://youtu.be/U4ndTDGhc1U
 
 Credit to Adrian Rosebrock, PhD, from pyimagesearch.com for this wonderful tutorial, which my face tracking code is based on.
