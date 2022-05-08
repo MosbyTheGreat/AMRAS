@@ -20,12 +20,16 @@ https://de.aliexpress.com/item/4000468996665.html
 https://de.aliexpress.com/item/32872820437.html  
 2x Servo:  
 https://de.aliexpress.com/item/32970493831.html  
-4 Band Relais:  
+4x Band Relais:  
 https://de.aliexpress.com/item/4001363470793.html  
 Some Cables:  
 https://de.aliexpress.com/item/33060775595.html  
+3x Ball Bearing:  
+https://www.amazon.de/gp/product/B076ZL83YN/ref=ppx_yo_dt_b_asin_title_o03_s00?ie=UTF8&psc=1  
 Syringes to create Rockets out of:  
 https://www.amazon.de/gp/product/B07MC7L4PG/ref=ppx_yo_dt_b_search_asin_image?ie=UTF8&psc=1  
+
+## Credits
 
 Inspired by this video https://youtu.be/U4ndTDGhc1U
 
