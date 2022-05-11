@@ -20,7 +20,7 @@ https://de.aliexpress.com/item/4000468996665.html
 https://de.aliexpress.com/item/32872820437.html  
 2x Servo:  
 https://de.aliexpress.com/item/32970493831.html  
-4x Band Relais:  
+4-Band Relais:  
 https://de.aliexpress.com/item/4001363470793.html  
 Some Cables:  
 https://de.aliexpress.com/item/33060775595.html  
