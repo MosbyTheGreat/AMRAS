@@ -1,8 +1,7 @@
 # AMRAS
 Anti-Mitbewohner-Raketen-Abwehr-System (engl. Anti Roommate Rocket Defense System)
 
-**NOTE: This is currently WIP with major parts still missing from the repository.**  
-**NOTE2: Project is put on hold until I get new parts. I trashed my camera module.**
+**NOTE: This is currently WIP with major parts still missing from the repository.**
 
 An automated turret, which uses a combination of a Raspberry Pi, a camera, some servos, trafos and methylated spirits
 to propell rubber rockets into anyones face who dares to enter it's vicinity.
