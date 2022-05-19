@@ -131,47 +131,44 @@ def set_servos_pid(pan, tilt):
         if in_range(tilt_angle, servo_range[0], servo_range[1]):
             kit.servo[1].angle = tilt_angle
 
+
 def set_servos(obj_x, obj_y, center_x, center_y):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
     # loop indefinitely
-    while True:
+    while True:  
+        error_x = center_x.value - obj_x.value
+        new_pos_x = servo_positions[0] + error_x
+        
+        error_y = center_y.value - obj_y.value
+        new_pos_y = servo_positions[0] + error_y
 
-        error_x = center_x - obj_x
-        new_x = servo_positions[0] + error_x
-        error_y = center_y - obj_y
-        new_y = servo_positions[1] + error_y
+        servo_decisiontree(error_x, new_pos_x, 0)
+        servo_decisiontree(error_y, new_pos_y, 1)
         print(error_x.__str__() + " " + error_y.__str__())
 
-        if in_range(new_x, servo_range[0], servo_range[1]):
-            if abs(error_x) <= step_size:
-                kit.servo[0].angle = new_x
-            else:
-                if error_x < 0:
-                    kit.servo[0].angle = servo_positions[0] - step_size
-                elif error_x > 0:
-                    kit.servo[0].angle = servo_positions[0] + step_size
+
+def servo_decisiontree(error, new_pos, servo_nr):
+    if abs(error) <= step_size:
+        if in_range(new_pos, servo_range[0], servo_range[1]):
+            kit.servo[servo_nr].angle = new_pos
         else:
-            if error_x < 0:
+            if error < 0:
                 kit.servo[0].angle = servo_range[0]
-            elif error_x > 0:
+            if error > 0:
                 kit.servo[0].angle = servo_range[1]
-
-
-        if in_range(new_y, servo_range[0], servo_range[1]):
-            if abs(error_y) <= step_size:
-                kit.servo[1].angle = new_y
+    else:
+        if error < 0:
+            if in_range(new_pos, servo_range[0], servo_range[1]):
+                kit.servo[servo_nr].angle = servo_positions[servo_nr] - step_size
             else:
-                if error_y < 0:
-                    kit.servo[1].angle = servo_positions[1] - step_size
-                elif error_y > 0:
-                    kit.servo[1].angle = servo_positions[1] + step_size
-        else:
-            if error_y < 0:
-                kit.servo[1].angle = servo_range[0]
-            elif error_y > 0:
-                kit.servo[1].angle = servo_range[1]
+                kit.servo[servo_nr].angle = servo_range[0]
+        if error > 0:
+            if in_range(new_pos, servo_range[0], servo_range[1]):
+                kit.servo[servo_nr].angle = servo_positions[servo_nr] + step_size
+            else:
+                kit.servo[servo_nr].angle = servo_range[1]
 
 
 # check to see if this is the main body of execution
