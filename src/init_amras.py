@@ -19,11 +19,8 @@ import cv2
 # init servos
 kit = ServoKit(channels=16)
 
-pan_pos = 90
-pan_multiplier = 0.1
-
-tilt_pos = 90
-tilt_multiplier = 0.1
+# define the range for the motors
+servoRange = (0, 180)
 
 #init GPIO Pins
 GPIO.setmode(GPIO.BCM)
@@ -121,17 +118,16 @@ def set_servos(pan, tilt):
     # loop indefinitely
     while True:
         # the pan and tilt angles are reversed
-        # here is some TODO, need to get new camera first and tinker around
         pan_angle = -1 * pan.value
         tilt_angle = -1 * tilt.value
         print(pan_angle.__str__() + " " + tilt_angle.__str__())
 
         # if the pan angle is within the range, pan
-        if in_range(pan_angle, 0, 180):
+        if in_range(pan_angle, servoRange[0], servoRange[1]):
             kit.servo[0].angle = pan_angle
 
         # if the tilt angle is within the range, tilt
-        if in_range(tilt_angle, 0, 180):
+        if in_range(tilt_angle, servoRange[0], servoRange[1]):
             kit.servo[1].angle = tilt_angle
 
 

@@ -22,22 +22,22 @@ GPIO.output(Pin3, GPIO.LOW)
 GPIO.output(Pin4, GPIO.LOW)
 
 GPIO.output(Pin1, GPIO.HIGH)
-time.sleep(2.0)
+time.sleep(0.5)
 GPIO.output(Pin1, GPIO.LOW)
 time.sleep(2.0)
 
 GPIO.output(Pin2, GPIO.HIGH)
-time.sleep(2.0)
+time.sleep(0.5)
 GPIO.output(Pin2, GPIO.LOW)
 time.sleep(2.0)
 
 GPIO.output(Pin3, GPIO.HIGH)
-time.sleep(2.0)
+time.sleep(0.5)
 GPIO.output(Pin3, GPIO.LOW)
 time.sleep(2.0)
 
 GPIO.output(Pin4, GPIO.HIGH)
-time.sleep(2.0)
+time.sleep(0.5)
 GPIO.output(Pin4, GPIO.LOW)
 time.sleep(2.0)
 
