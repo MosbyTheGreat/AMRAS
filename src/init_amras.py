@@ -19,7 +19,7 @@ import cv2
 # init servos
 kit = ServoKit(channels=16)
 
-servo_range = (0, 180)
+servo_range = (1, 180)
 step_size = 10 # decrease to make movement smoother
 servo_positions = (90, 90)
 
