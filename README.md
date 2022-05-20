@@ -1,7 +1,7 @@
 # AMRAS
 Anti-Mitbewohner-Raketen-Abwehr-System (engl. Anti Roommate Rocket Defense System)
 
-**NOTE: This is currently WIP with major parts still missing from the repository.**
+**NOTE: This is currently WIP**
 
 An automated turret, which uses a combination of a Raspberry Pi, a camera, some servos, trafos and methylated spirits
 to propell rubber rockets into anyones face who dares to enter it's vicinity.
@@ -29,6 +29,13 @@ https://www.amazon.de/gp/product/B076ZL83YN/ref=ppx_yo_dt_b_asin_title_o03_s00?i
 https://www.magnet-shop.net/neodym/quadermagnete/quadermagnet-10.0-x-5.0-x-3.0-mm-n40-nickel-haelt-1.4-kg  
 Syringes to create Rockets out of:  
 https://www.amazon.de/gp/product/B07MC7L4PG/ref=ppx_yo_dt_b_search_asin_image?ie=UTF8&psc=1  
+Bunch of Screws (I used Wood screws to screw into the PLA):  
+Raspi: 4x 2,0x10mm  
+Kamera: 4x 2,0x10mm  
+Main Body Fillings: 24x 2,9x13mm  
+Arms: 4x 2,9x13mm  
+Servo Shield: 4x 2,0x10mm  
+Relais: 1x 2,0x10mm  
 
 ## Credits
 
