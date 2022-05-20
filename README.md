@@ -29,6 +29,11 @@ Arms: 4x 2,9x13mm
 Servo Shield: 4x 2,0x10mm  
 Relais: 1x 2,0x10mm  
 
+## TODOs
+
+ - Finish code
+ - Add build manual
+
 ## Feature Ideas
 
  - Stereo camera to calculate distances and trajectory of projectiles
