@@ -40,7 +40,7 @@ Relais: 1x 2,0x10mm
 ## Feature Ideas
 
  - Stereo camera to calculate distances and trajectory of projectiles
- - Differnet kind of projectiles
+ - Different kinds of projectiles
  - Better servos to allow for 360° coverage
 
 ## Credits
