@@ -37,6 +37,12 @@ Arms: 4x 2,9x13mm
 Servo Shield: 4x 2,0x10mm  
 Relais: 1x 2,0x10mm  
 
+## Feature Ideas
+
+ - Stereo camera to calculate distances and trajectory of projectiles
+ - Differnet kind of projectiles
+ - Better servos to allow for 360° coverage
+
 ## Credits
 
 Initially inspired by this video:  
