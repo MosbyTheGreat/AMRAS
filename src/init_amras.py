@@ -140,11 +140,11 @@ def set_servos(obj_x, obj_y, center_x, center_y):
 
     # loop indefinitely
     while True:  
-        error_x = center_x.value - obj_x.value
+        error_x = obj_x.value - center_x.value
         new_pos_x = servo_positions[servo_tilt] + error_x
         smooth_move(new_pos_x, servo_tilt)
         
-        error_y = center_y.value - obj_y.value
+        error_y = obj_y.value + center_y.value
         new_pos_y = servo_positions[servo_pan] + error_y
         smooth_move(new_pos_y, servo_pan)
 
@@ -158,11 +158,19 @@ def smooth_move(angle, servo_nr):
             servo_positions[servo_nr] = angle
         else:
             if angle < servo_positions[servo_nr]:
-                kit.servo[servo_nr].angle = angle - step_size
-                servo_positions[servo_nr] = angle - step_size
+                if angle - step_size < servo_range[0]:
+                    kit.servo[servo_nr].angle = servo_range[0]
+                    servo_positions[servo_nr] = servo_range[0]
+                else:
+                    kit.servo[servo_nr].angle = angle - step_size
+                    servo_positions[servo_nr] = angle - step_size
             else:
-                kit.servo[servo_nr].angle = angle + step_size
-                servo_positions[servo_nr] = angle + step_size
+                if angle + step_size > servo_range[1]:
+                    kit.servo[servo_nr].angle = servo_range[1]
+                    servo_positions[servo_nr] = servo_range[1]
+                else:
+                    kit.servo[servo_nr].angle = angle + step_size
+                    servo_positions[servo_nr] = angle + step_size
 
 
 # check to see if this is the main body of execution
