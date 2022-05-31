@@ -18,12 +18,12 @@ import cv2
 
 # init servos
 kit = ServoKit(channels=16)
-
-servo_range = (1, 180)
-step_size = 10 # decrease to make movement smoother
-servo_positions = (90, 90)
 servo_pan = 1
 servo_tilt = 0
+
+step_size = 10 # decrease to make movement smoother
+servo_range = [1, 180]
+servo_positions = [90, 90]
 
 #init GPIO Pins
 GPIO.setmode(GPIO.BCM)
