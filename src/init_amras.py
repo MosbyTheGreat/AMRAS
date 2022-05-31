@@ -28,20 +28,20 @@ servo_tilt = 0
 #init GPIO Pins
 GPIO.setmode(GPIO.BCM)
 
-Pin1 = 24
-Pin2 = 23
-Pin3 = 22
-Pin4 = 27
+firing_pin_1 = 24
+firing_pin_2 = 23
+firing_pin_3 = 22
+firing_pin_4 = 27
 
-GPIO.setup(Pin1, GPIO.OUT)
-GPIO.setup(Pin2, GPIO.OUT)
-GPIO.setup(Pin3, GPIO.OUT)
-GPIO.setup(Pin4, GPIO.OUT)
+GPIO.setup(firing_pin_1, GPIO.OUT)
+GPIO.setup(firing_pin_2, GPIO.OUT)
+GPIO.setup(firing_pin_3, GPIO.OUT)
+GPIO.setup(firing_pin_4, GPIO.OUT)
 
-GPIO.output(Pin1, GPIO.LOW)
-GPIO.output(Pin2, GPIO.LOW)
-GPIO.output(Pin3, GPIO.LOW)
-GPIO.output(Pin4, GPIO.LOW)
+GPIO.output(firing_pin_1, GPIO.LOW)
+GPIO.output(firing_pin_2, GPIO.LOW)
+GPIO.output(firing_pin_3, GPIO.LOW)
+GPIO.output(firing_pin_4, GPIO.LOW)
 
 # function to handle keyboard interrupt
 def signal_handler(sig, frame):
@@ -49,8 +49,8 @@ def signal_handler(sig, frame):
     print("[INFO] You pressed `ctrl + c`! Exiting...")
 
     # reset servos to default position
-    kit.servo[0].angle = 90
-    kit.servo[1].angle = 90
+    kit.servo[servo_pan].angle = 90
+    kit.servo[servo_tilt].angle = 90
 
     # exit
     sys.exit()
@@ -134,43 +134,35 @@ def set_servos_pid(pan, tilt):
             kit.servo[servo_tilt].angle = tilt_angle
 
 
-"""def set_servos(obj_x, obj_y, center_x, center_y):
+def set_servos(obj_x, obj_y, center_x, center_y):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
     # loop indefinitely
     while True:  
         error_x = center_x.value - obj_x.value
-        new_pos_x = servo_positions[0] + error_x
+        new_pos_x = servo_positions[servo_tilt] + error_x
+        smooth_move(new_pos_x, servo_tilt)
         
         error_y = center_y.value - obj_y.value
-        new_pos_y = servo_positions[0] + error_y
+        new_pos_y = servo_positions[servo_pan] + error_y
+        smooth_move(new_pos_y, servo_pan)
 
-        servo_decisiontree(error_x, new_pos_x, 0)
-        servo_decisiontree(error_y, new_pos_y, 1)
         print(error_x.__str__() + " " + error_y.__str__())
 
 
-def servo_decisiontree(error, new_pos, servo_nr):
-    if abs(error) <= step_size:
-        if in_range(new_pos, servo_range[0], servo_range[1]):
-            kit.servo[servo_nr].angle = new_pos
+def smooth_move(angle, servo_nr):
+    if in_range(angle, servo_range[0], servo_range[1]):
+        if abs(angle - servo_positions[servo_nr]) < step_size:
+            kit.servo[servo_nr].angle = angle
+            servo_positions[servo_nr] = angle
         else:
-            if error < 0:
-                kit.servo[0].angle = servo_range[0]
-            if error > 0:
-                kit.servo[0].angle = servo_range[1]
-    else:
-        if error < 0:
-            if in_range(new_pos, servo_range[0], servo_range[1]):
-                kit.servo[servo_nr].angle = servo_positions[servo_nr] - step_size
+            if angle < servo_positions[servo_nr]:
+                kit.servo[servo_nr].angle = angle - step_size
+                servo_positions[servo_nr] = angle - step_size
             else:
-                kit.servo[servo_nr].angle = servo_range[0]
-        if error > 0:
-            if in_range(new_pos, servo_range[0], servo_range[1]):
-                kit.servo[servo_nr].angle = servo_positions[servo_nr] + step_size
-            else:
-                kit.servo[servo_nr].angle = servo_range[1]"""
+                kit.servo[servo_nr].angle = angle + step_size
+                servo_positions[servo_nr] = angle + step_size
 
 
 # check to see if this is the main body of execution
@@ -178,12 +170,12 @@ if __name__ == "__main__":
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--cascade", type=str, required=True, help="path to input Haar cascade for face detection")
-    #ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="whether to use PID or more basic movement") # PID not working at the moment
+    ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="whether to use PID or more basic movement") # PID not working at the moment
     args = vars(ap.parse_args())
 
     # set servos to startung position
-    kit.servo[0].angle = servo_positions[0]
-    kit.servo[1].angle = servo_positions[1]
+    kit.servo[servo_pan].angle = servo_positions[servo_pan]
+    kit.servo[servo_tilt].angle = servo_positions[servo_tilt]
 
     # start a manager for managing process-safe variables
     with Manager() as manager:
@@ -216,25 +208,29 @@ if __name__ == "__main__":
         # 4. setServosPID  - drives the servos to proper angles based
         #                    on PID feedback to keep object in center
         # 5. setServos     - drives the servos if not using PID, very basic
-        process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
-        process_object_center.start()
 
-        #if args["pid"]:
-        process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
-        process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
-        process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
+        if args["pid"]:
+            process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
+            process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
+            process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
+            process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
 
-        process_panning.start()
-        process_tilting.start()
-        process_set_servos_pid.start()
+            process_object_center.start()
+            process_panning.start()
+            process_tilting.start()
+            process_set_servos_pid.start()
 
-        process_object_center.join()
-        process_panning.join()
-        process_tilting.join()
-        process_set_servos_pid.join()
+            process_object_center.join()
+            process_panning.join()
+            process_tilting.join()
+            process_set_servos_pid.join()
 
-        #else:
-        #    process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
-        #    process_set_servos.start()
-        #    process_object_center.join()
-        #    process_set_servos.join()
+        else:
+            process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
+            process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
+
+            process_object_center.start()
+            process_set_servos.start()
+
+            process_object_center.join()
+            process_set_servos.join()
