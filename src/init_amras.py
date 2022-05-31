@@ -198,14 +198,14 @@ if __name__ == "__main__":
         tlt = manager.Value("i", 0)
 
         # set PID values for panning
-        pan_p = manager.Value("f", 0.09)
-        pan_i = manager.Value("f", 0.08)
-        pan_d = manager.Value("f", 0.002)
+        pan_p = manager.Value("f", 0.0)
+        pan_i = manager.Value("f", 0.0)
+        pan_d = manager.Value("f", 0.0)
 
         # set PID values for tilting
-        tilt_p = manager.Value("f", 0.11)
-        tilt_i = manager.Value("f", 0.10)
-        tilt_d = manager.Value("f", 0.002)
+        tilt_p = manager.Value("f", 0.0)
+        tilt_i = manager.Value("f", 0.0)
+        tilt_d = manager.Value("f", 0.0)
 
         # we have 5 independent processes
         # 1. objectCenter  - finds/localizes the object
@@ -220,15 +220,17 @@ if __name__ == "__main__":
         if args["pid"]:
             process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
             process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
-            process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
 
             process_panning.start()
             process_tilting.start()
-            process_set_servos_pid.start()
 
             process_object_center.join()
             process_panning.join()
             process_tilting.join()
+
+            time.sleep(5)
+            process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
+            process_set_servos_pid.start()
             process_set_servos_pid.join()
         else:
             process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
