@@ -22,6 +22,8 @@ kit = ServoKit(channels=16)
 servo_range = (1, 180)
 step_size = 10 # decrease to make movement smoother
 servo_positions = (90, 90)
+servo_pan = 1
+servo_tilt = 0
 
 #init GPIO Pins
 GPIO.setmode(GPIO.BCM)
@@ -120,19 +122,19 @@ def set_servos_pid(pan, tilt):
     while True:
         # the pan and tilt angles are reversed
         pan_angle = pan.value
-        tilt_angle = tilt.value
+        tilt_angle = tilt.value * -1
         print(pan_angle.__str__() + " " + tilt_angle.__str__())
 
         # if the pan angle is within the range, pan
         if in_range(pan_angle, servo_range[0], servo_range[1]):
-            kit.servo[0].angle = pan_angle
+            kit.servo[servo_pan].angle = pan_angle
 
         # if the tilt angle is within the range, tilt
         if in_range(tilt_angle, servo_range[0], servo_range[1]):
-            kit.servo[1].angle = tilt_angle
+            kit.servo[servo_tilt].angle = tilt_angle
 
 
-def set_servos(obj_x, obj_y, center_x, center_y):
+"""def set_servos(obj_x, obj_y, center_x, center_y):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -168,7 +170,7 @@ def servo_decisiontree(error, new_pos, servo_nr):
             if in_range(new_pos, servo_range[0], servo_range[1]):
                 kit.servo[servo_nr].angle = servo_positions[servo_nr] + step_size
             else:
-                kit.servo[servo_nr].angle = servo_range[1]
+                kit.servo[servo_nr].angle = servo_range[1]"""
 
 
 # check to see if this is the main body of execution
@@ -176,7 +178,7 @@ if __name__ == "__main__":
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--cascade", type=str, required=True, help="path to input Haar cascade for face detection")
-    ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="whether to use PID or more basic movement") # PID not working at the moment
+    #ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="whether to use PID or more basic movement") # PID not working at the moment
     args = vars(ap.parse_args())
 
     # set servos to startung position
@@ -217,23 +219,22 @@ if __name__ == "__main__":
         process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
         process_object_center.start()
 
-        if args["pid"]:
-            process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
-            process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
+        #if args["pid"]:
+        process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
+        process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
+        process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
 
-            process_panning.start()
-            process_tilting.start()
+        process_panning.start()
+        process_tilting.start()
+        process_set_servos_pid.start()
 
-            process_object_center.join()
-            process_panning.join()
-            process_tilting.join()
+        process_object_center.join()
+        process_panning.join()
+        process_tilting.join()
+        process_set_servos_pid.join()
 
-            time.sleep(5)
-            process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
-            process_set_servos_pid.start()
-            process_set_servos_pid.join()
-        else:
-            process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
-            process_set_servos.start()
-            process_object_center.join()
-            process_set_servos.join()
+        #else:
+        #    process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
+        #    process_set_servos.start()
+        #    process_object_center.join()
+        #    process_set_servos.join()
