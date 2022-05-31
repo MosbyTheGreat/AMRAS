@@ -22,6 +22,7 @@ servo_pan = 1
 servo_tilt = 0
 
 step_size = 10 # decrease to make movement smoother
+multiplier = 0.05 # for translation from error to servo movement
 servo_range = [1, 180]
 servo_positions = [90, 90]
 
@@ -141,36 +142,38 @@ def set_servos(obj_x, obj_y, center_x, center_y):
     # loop indefinitely
     while True:  
         error_x = obj_x.value - center_x.value
-        new_pos_x = servo_positions[servo_tilt] + error_x
-        smooth_move(new_pos_x, servo_tilt)
+        smooth_move(error_x, servo_pan)
         
-        error_y = obj_y.value + center_y.value
-        new_pos_y = servo_positions[servo_pan] + error_y
-        smooth_move(new_pos_y, servo_pan)
+        error_y = obj_y.value - center_y.value
+        smooth_move(error_y, servo_tilt)
 
         print(error_x.__str__() + " " + error_y.__str__())
 
 
-def smooth_move(angle, servo_nr):
-    if in_range(angle, servo_range[0], servo_range[1]):
-        if abs(angle - servo_positions[servo_nr]) < step_size:
-            kit.servo[servo_nr].angle = angle
-            servo_positions[servo_nr] = angle
-        else:
-            if angle < servo_positions[servo_nr]:
-                if angle - step_size < servo_range[0]:
-                    kit.servo[servo_nr].angle = servo_range[0]
-                    servo_positions[servo_nr] = servo_range[0]
-                else:
-                    kit.servo[servo_nr].angle = angle - step_size
-                    servo_positions[servo_nr] = angle - step_size
-            else:
-                if angle + step_size > servo_range[1]:
-                    kit.servo[servo_nr].angle = servo_range[1]
-                    servo_positions[servo_nr] = servo_range[1]
-                else:
-                    kit.servo[servo_nr].angle = angle + step_size
-                    servo_positions[servo_nr] = angle + step_size
+def smooth_move(error, servo_nr):
+    new_pos = servo_positions[servo_nr] + (error * multiplier)
+    if error < step_size and in_range(new_pos, servo_range[0], servo_range[1]):
+        kit.servo[servo_nr].angle = new_pos
+        servo_positions[servo_nr] = new_pos
+#     if in_range(angle, servo_range[0], servo_range[1]):
+#         if abs(angle - servo_positions[servo_nr]) < step_size:
+#             kit.servo[servo_nr].angle = angle
+#             servo_positions[servo_nr] = angle
+#         else:
+#             if angle < servo_positions[servo_nr]:
+#                 if angle - step_size < servo_range[0]:
+#                     kit.servo[servo_nr].angle = servo_range[0]
+#                     servo_positions[servo_nr] = servo_range[0]
+#                 else:
+#                     kit.servo[servo_nr].angle = angle - step_size
+#                     servo_positions[servo_nr] = angle - step_size
+#             else:
+#                 if angle + step_size > servo_range[1]:
+#                     kit.servo[servo_nr].angle = servo_range[1]
+#                     servo_positions[servo_nr] = servo_range[1]
+#                 else:
+#                     kit.servo[servo_nr].angle = angle + step_size
+#                     servo_positions[servo_nr] = angle + step_size
 
 
 # check to see if this is the main body of execution
