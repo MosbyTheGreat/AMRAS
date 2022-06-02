@@ -2,6 +2,7 @@
 # python3 pan_tilt_tracking.py -c frontalface.xml
 
 # import necessary packages
+from math import ceil
 from multiprocessing import Manager
 from multiprocessing import Process
 from imutils.video import VideoStream
@@ -21,8 +22,7 @@ kit = ServoKit(channels=16)
 servo_pan = 1
 servo_tilt = 0
 
-step_size = 10 # decrease to make movement smoother
-multiplier = 0.05 # for translation from error to servo movement
+multiplier = 0.1 # for translation from error to servo movement
 servo_range = [1, 180]
 servo_positions = [90, 90]
 
@@ -83,6 +83,7 @@ def obj_center(args, obj_x, obj_y, center_x, center_y):
         object_loc = obj.update(frame, (center_x.value, center_y.value))
         ((obj_x.value, obj_y.value), rect) = object_loc
 
+
         # extract the bounding box and draw it
         if rect is not None:
             (x, y, w, h) = rect
@@ -122,8 +123,8 @@ def set_servos_pid(pan, tilt):
     # loop indefinitely
     while True:
         # the pan and tilt angles are reversed
-        pan_angle = pan.value
-        tilt_angle = tilt.value * -1
+        pan_angle = (pan.value * -1) + 90
+        tilt_angle = (tilt.value * -1) + 90
         print(pan_angle.__str__() + " " + tilt_angle.__str__())
 
         # if the pan angle is within the range, pan
@@ -138,42 +139,26 @@ def set_servos_pid(pan, tilt):
 def set_servos(obj_x, obj_y, center_x, center_y):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
+    # give the camera time to warm up
+    time.sleep(5.0)
 
     # loop indefinitely
-    while True:  
+    while True:
+        time.sleep(0.2)
         error_x = obj_x.value - center_x.value
         smooth_move(error_x, servo_pan)
         
-        error_y = obj_y.value - center_y.value
+        error_y = (obj_y.value - center_y.value) *-1
         smooth_move(error_y, servo_tilt)
 
         print(error_x.__str__() + " " + error_y.__str__())
 
 
 def smooth_move(error, servo_nr):
-    new_pos = servo_positions[servo_nr] + (error * multiplier)
-    if error < step_size and in_range(new_pos, servo_range[0], servo_range[1]):
+    new_pos = servo_positions[servo_nr] - ceil(error * multiplier)
+    if in_range(new_pos, servo_range[0], servo_range[1]):
         kit.servo[servo_nr].angle = new_pos
         servo_positions[servo_nr] = new_pos
-#     if in_range(angle, servo_range[0], servo_range[1]):
-#         if abs(angle - servo_positions[servo_nr]) < step_size:
-#             kit.servo[servo_nr].angle = angle
-#             servo_positions[servo_nr] = angle
-#         else:
-#             if angle < servo_positions[servo_nr]:
-#                 if angle - step_size < servo_range[0]:
-#                     kit.servo[servo_nr].angle = servo_range[0]
-#                     servo_positions[servo_nr] = servo_range[0]
-#                 else:
-#                     kit.servo[servo_nr].angle = angle - step_size
-#                     servo_positions[servo_nr] = angle - step_size
-#             else:
-#                 if angle + step_size > servo_range[1]:
-#                     kit.servo[servo_nr].angle = servo_range[1]
-#                     servo_positions[servo_nr] = servo_range[1]
-#                 else:
-#                     kit.servo[servo_nr].angle = angle + step_size
-#                     servo_positions[servo_nr] = angle + step_size
 
 
 # check to see if this is the main body of execution
@@ -235,7 +220,6 @@ if __name__ == "__main__":
             process_panning.join()
             process_tilting.join()
             process_set_servos_pid.join()
-
         else:
             process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
             process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
