@@ -155,10 +155,10 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
                     if (args["armed"]):
                         fire(firing_counter)
                         firing_counter = firing_counter + 1
+                        time.sleep(2.0)
                     else:
                         print("Shoot!")
                     aim_timeout_counter = aim_timeout
-                    time.sleep(2.0)
                 else:
                     aim_timeout_counter = aim_timeout_counter - 1
             else:
@@ -212,6 +212,9 @@ def fire(firing_counter):
         GPIO.output(firing_pins[firing_counter], GPIO.LOW)
         if args["verbose"]:
             print("Projectile", firing_counter + 1, "fired!")
+    else:
+        if args["verbose"]:
+            print("All projectiles fired!")
 
 
 # check to see if this is the main body of execution
