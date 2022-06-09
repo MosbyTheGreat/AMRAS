@@ -224,7 +224,7 @@ if __name__ == "__main__":
         tilt_i = manager.Value("f", 0.0)
         tilt_d = manager.Value("f", 0.0)
 
-        # initialize idle flag
+        # initialize search flag
         search_flag = manager.Value("1", 0)
 
         # we have 5 independent processes
