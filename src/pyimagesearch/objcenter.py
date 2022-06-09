@@ -1,4 +1,3 @@
-# import necessary packages
 import imutils
 import cv2
 

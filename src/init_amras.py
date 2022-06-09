@@ -1,7 +1,3 @@
-# USAGE
-# python3 pan_tilt_tracking.py -c frontalface.xml
-
-# import necessary packages
 from math import ceil
 from multiprocessing import Manager
 from multiprocessing import Process
