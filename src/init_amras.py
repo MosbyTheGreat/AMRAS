@@ -172,7 +172,7 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
             if timeout_counter == 0:
                 kit.servo[servo_tilt].angle = 90
                 servo_position_y.value = 90
-                current_pos = servo_position_x
+                current_pos = servo_position_x.value
 
                 if current_pos == 0 or current_pos == 180:
                     moving_direction = moving_direction * -1
