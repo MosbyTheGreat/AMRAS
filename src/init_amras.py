@@ -20,7 +20,6 @@ servo_tilt = 0
 
 multiplier = 0.1 # for translation from error to servo movement
 servo_range = [1, 180]
-servo_positions = [90, 90]
 
 #init GPIO Pins
 GPIO.setmode(GPIO.BCM)
@@ -135,7 +134,7 @@ def set_servos_pid(pan, tilt):
             kit.servo[servo_tilt].angle = tilt_angle
 
 
-def set_servos(obj_x, obj_y, center_x, center_y, idle_flag):
+def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_position_y, search_flag):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
     # give the camera time to warm up
@@ -143,13 +142,13 @@ def set_servos(obj_x, obj_y, center_x, center_y, idle_flag):
 
     # loop indefinitely
     while True:
-        if idle_flag.value == 0:
+        if search_flag.value == 0:
             time.sleep(0.1)
             error_x = obj_x.value - center_x.value
-            smooth_move(error_x, servo_pan)
+            smooth_move(error_x, servo_pan, servo_position_x.value)
             
             error_y = (obj_y.value - center_y.value) * -1
-            smooth_move(error_y, servo_tilt)
+            smooth_move(error_y, servo_tilt, servo_position_y.value)
 
             if error_x == 0 and error_y == 0:
                 print("shoot!")
@@ -157,14 +156,14 @@ def set_servos(obj_x, obj_y, center_x, center_y, idle_flag):
                 print(error_x, error_y)
 
 
-def smooth_move(error, servo_nr):
-    new_pos = servo_positions[servo_nr] - ceil(error * multiplier)
+def smooth_move(error, servo_nr, servo_position):
+    new_pos = servo_position - ceil(error * multiplier)
     if in_range(new_pos, servo_range[0], servo_range[1]):
         kit.servo[servo_nr].angle = new_pos
-        servo_positions[servo_nr] = new_pos
+        servo_position = new_pos
 
 
-def search_mode(search_flag):
+def search_mode(servo_position_x, servo_position_y, search_flag):
     moving_direction = -1
     timeout_counter = 50
 
@@ -172,19 +171,20 @@ def search_mode(search_flag):
         if search_flag.value == 1:
             if timeout_counter == 0:
                 kit.servo[servo_tilt].angle = 90
-                servo_positions[servo_tilt] = 90
-                current_pos = servo_positions[servo_pan]
+                servo_position_y.value = 90
+                current_pos = servo_position_x
 
                 if current_pos == 0 or current_pos == 180:
                     moving_direction = moving_direction * -1
+                    kit.servo[servo_pan].angle = current_pos + moving_direction
+                    servo_position_x.value = current_pos + moving_direction
                 else:
                     kit.servo[servo_pan].angle = current_pos + moving_direction
-                    servo_positions[servo_pan] = current_pos + moving_direction
+                    servo_position_x.value = current_pos + moving_direction
             else:
                 timeout_counter = timeout_counter -1
         else:
             timeout_counter = 50
-        print(timeout_counter.__str__())
         time.sleep(0.1)
 
 
@@ -197,8 +197,8 @@ if __name__ == "__main__":
     args = vars(ap.parse_args())
 
     # set servos to startung position
-    kit.servo[servo_pan].angle = servo_positions[servo_pan]
-    kit.servo[servo_tilt].angle = servo_positions[servo_tilt]
+    kit.servo[servo_pan].angle = 90
+    kit.servo[servo_tilt].angle = 90
 
     # start a manager for managing process-safe variables
     with Manager() as manager:
@@ -210,6 +210,9 @@ if __name__ == "__main__":
         obj_x = manager.Value("i", 0)
         obj_y = manager.Value("i", 0)
 
+        # set integer values for servo positions
+        servo_position_x = manager.Value("i", 90)
+        servo_position_y = manager.Value("i", 90)
 
         # initialize search flag
         search_flag = manager.Value("i", 0)
@@ -223,7 +226,7 @@ if __name__ == "__main__":
         # 5. setServos     - drives the servos if not using PID, very basic
 
         process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y, search_flag))
-        process_search_mode = Process(target=search_mode, args=(search_flag))
+        process_search_mode = Process(target=search_mode, args=(servo_position_x, servo_position_y, search_flag))
         process_object_center.start()
         process_search_mode.start()
 
@@ -241,7 +244,7 @@ if __name__ == "__main__":
             tilt_p = manager.Value("f", 0.0)
             tilt_i = manager.Value("f", 0.0)
             tilt_d = manager.Value("f", 0.0)
-            
+
             process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
             process_tilting = Process(target=pid_process, args=(tilt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
             process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tilt))
@@ -254,7 +257,7 @@ if __name__ == "__main__":
             process_tilting.join()
             process_set_servos_pid.join()
         else:
-            process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y, search_flag))
+            process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y, servo_position_x, servo_position_y, search_flag))
             process_set_servos.start()
             process_set_servos.join()
 
