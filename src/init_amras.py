@@ -36,7 +36,7 @@ for pin in firing_pins:
 # function to handle keyboard interrupt
 def signal_handler(sig, frame):
     # print a status message
-    print("[INFO] You pressed `ctrl + c`! Exiting...")
+    print("You pressed `ctrl + c`! Exiting...")
 
     # reset servos to default position
     kit.servo[servo_pan].angle = 90
@@ -118,7 +118,7 @@ def set_servos_pid(pan, tilt):
         # the pan and tilt angles are reversed
         pan_angle = pan.value + 90
         tilt_angle = (tilt.value * -1) + 90
-        print(pan_angle.__str__() + " " + tilt_angle.__str__())
+        print("Pan Angle:", pan_angle, "Tilt Angle:", tilt_angle)
 
         # if the pan angle is within the range, pan
         if in_range(pan_angle, servo_range[0], servo_range[1]):
@@ -160,10 +160,12 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
                         print("Shoot!")
                     aim_timeout_counter = aim_timeout
                 else:
+                    if args["verbose"]:
+                        print("Aim Timeout Counter:", aim_timeout)
                     aim_timeout_counter = aim_timeout_counter - 1
             else:
                 if args["verbose"]:
-                    print(error_x, error_y)
+                    print("Error x:", error_x, "Error y:", error_y)
                 aim_timeout_counter = aim_timeout
         time.sleep(0.1)
 
@@ -198,7 +200,7 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
                     servo_position_x.value = current_pos + moving_direction
             else:
                 if args["verbose"]:
-                    print(timeout_counter)
+                    print("Timeout Counter:", timeout_counter)
                 timeout_counter = timeout_counter -1
         else:
             timeout_counter = timeout
@@ -244,6 +246,8 @@ if __name__ == "__main__":
         print("AMRAS will report everythign in the console.")
     if args["image"]:
         print("Video feed will be drawn.")
+
+    print("------------------------------------------------------------------------")
 
     # set servos to startung position
     kit.servo[servo_pan].angle = 90
