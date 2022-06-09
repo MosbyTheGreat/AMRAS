@@ -210,19 +210,6 @@ if __name__ == "__main__":
         obj_x = manager.Value("i", 0)
         obj_y = manager.Value("i", 0)
 
-        # pan and tilt values will be managed by independed PIDs
-        pan = manager.Value("i", 0)
-        tlt = manager.Value("i", 0)
-
-        # set PID values for panning
-        pan_p = manager.Value("f", 0.0)
-        pan_i = manager.Value("f", 0.0)
-        pan_d = manager.Value("f", 0.0)
-
-        # set PID values for tilting
-        tilt_p = manager.Value("f", 0.0)
-        tilt_i = manager.Value("f", 0.0)
-        tilt_d = manager.Value("f", 0.0)
 
         # initialize search flag
         search_flag = manager.Value("i", 0)
@@ -241,9 +228,23 @@ if __name__ == "__main__":
         process_search_mode.start()
 
         if args["pid"]:
+            # pan and tilt values will be managed by independed PIDs
+            pan = manager.Value("i", 0)
+            tilt = manager.Value("i", 0)
+
+            # set PID values for panning
+            pan_p = manager.Value("f", 0.0)
+            pan_i = manager.Value("f", 0.0)
+            pan_d = manager.Value("f", 0.0)
+
+            # set PID values for tilting
+            tilt_p = manager.Value("f", 0.0)
+            tilt_i = manager.Value("f", 0.0)
+            tilt_d = manager.Value("f", 0.0)
+            
             process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
-            process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
-            process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
+            process_tilting = Process(target=pid_process, args=(tilt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
+            process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tilt))
 
             process_panning.start()
             process_tilting.start()
