@@ -7,7 +7,6 @@ from imutils.video import VideoStream
 from pyimagesearch.objcenter import ObjCenter
 from pyimagesearch.pid import PID
 from adafruit_servokit import ServoKit
-import adafruit_motor.servo
 import RPi.GPIO as GPIO
 import argparse
 import signal
@@ -207,9 +206,9 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
 
 def fire(firing_counter):
     if firing_counter < 4:
-        GPIO.output(firing_counter, GPIO.HIGH)
+        GPIO.output(firing_pins[firing_counter], GPIO.HIGH)
         time.sleep(0.5)
-        GPIO.output(firing_counter, GPIO.LOW)
+        GPIO.output(firing_pins[firing_counter], GPIO.LOW)
         firing_counter = firing_counter + 1
         if args["verbose"]:
             print("Projectile", firing_counter + 1, "fired!")
