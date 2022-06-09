@@ -225,7 +225,7 @@ if __name__ == "__main__":
         tilt_d = manager.Value("f", 0.0)
 
         # initialize search flag
-        search_flag = manager.Value("1", 0)
+        search_flag = manager.Value("i", 0)
 
         # we have 5 independent processes
         # 1. objectCenter  - finds/localizes the object
