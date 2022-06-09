@@ -226,14 +226,21 @@ if __name__ == "__main__":
     args = vars(ap.parse_args())
 
     print("Welcome to AMRAS, your room will now be defended against nosy roommates.")
+
     if args["pid"]:
         print("PID movement will be used.")
     else:
         print("Basic pan/tilt movement will be used.")
+
     if args["armed"]:
         print("Weapon system is armed and ready.")
     else:
         print("Weapons are not armed, AMRAS will only work as a high-tech scarecrow.")
+    
+    if args["verbose"]:
+        print("AMRAS will report everythign in the console.")
+    if args["image"]:
+        print("Video feed will be drawn.")
 
     # set servos to startung position
     kit.servo[servo_pan].angle = 90
