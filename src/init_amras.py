@@ -84,9 +84,9 @@ def obj_center(args, obj_x, obj_y, center_x, center_y, idle_flag):
         if rect is not None:
             (x, y, w, h) = rect
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            idle_flag.Value = True
+            idle_flag.Value = 0
         else:
-            idle_flag.Value = False
+            idle_flag.Value = 1
 
         # display the frame to the screen
         cv2.imshow("Pan-Tilt Face Tracking", frame)
@@ -135,7 +135,7 @@ def set_servos_pid(pan, tilt):
             kit.servo[servo_tilt].angle = tilt_angle
 
 
-def set_servos(obj_x, obj_y, center_x, center_y):
+def set_servos(obj_x, obj_y, center_x, center_y, idle_flag):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
     # give the camera time to warm up
@@ -143,14 +143,18 @@ def set_servos(obj_x, obj_y, center_x, center_y):
 
     # loop indefinitely
     while True:
-        time.sleep(0.1)
-        error_x = obj_x.value - center_x.value
-        smooth_move(error_x, servo_pan)
-        
-        error_y = (obj_y.value - center_y.value) * -1
-        smooth_move(error_y, servo_tilt)
+        if idle_flag.Value is 0:
+            time.sleep(0.1)
+            error_x = obj_x.value - center_x.value
+            smooth_move(error_x, servo_pan)
+            
+            error_y = (obj_y.value - center_y.value) * -1
+            smooth_move(error_y, servo_tilt)
 
-        print(error_x.__str__() + " " + error_y.__str__())
+            if error_x is 0 and error_y is 0:
+                print("shoot!")
+            else:
+                print(error_x, error_y)
 
 
 def smooth_move(error, servo_nr):
@@ -162,22 +166,25 @@ def smooth_move(error, servo_nr):
 
 def idle_mode(idle_flag):
     moving_direction = -1
-    timeout_counter = 500
+    timeout_counter = 50
 
     while True:
-        if idle_flag:
+        if idle_flag.Value is 1:
             if timeout_counter is 0:
+                kit.servo[servo_tilt].angle = 90
+                servo_positions[servo_tilt] = 90
                 current_pos = servo_positions[servo_pan]
+
                 if current_pos is 0 or current_pos is 180:
                     moving_direction = moving_direction * -1
                 else:
                     kit.servo[servo_pan].angle = current_pos + moving_direction
                     servo_positions[servo_pan] = current_pos + moving_direction
             else:
-                timeout_counter = -1
+                timeout_counter = timeout_counter -1
         else:
             timeout_counter = 50
-
+        print(timeout_counter.__str__())
         time.sleep(0.1)
 
 
@@ -218,7 +225,7 @@ if __name__ == "__main__":
         tilt_d = manager.Value("f", 0.0)
 
         # initialize idle flag
-        idle_flag = manager.Value("b", False)
+        idle_flag = manager.Value("1", 0)
 
         # we have 5 independent processes
         # 1. objectCenter  - finds/localizes the object
@@ -228,27 +235,25 @@ if __name__ == "__main__":
         #                    on PID feedback to keep object in center
         # 5. setServos     - drives the servos if not using PID, very basic
 
+        process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y, idle_flag))
+        process_object_center.start()
+
         if args["pid"]:
-            process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y, idle_flag))
             process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
             process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
             process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
 
-            process_object_center.start()
             process_panning.start()
             process_tilting.start()
             process_set_servos_pid.start()
 
-            process_object_center.join()
             process_panning.join()
             process_tilting.join()
             process_set_servos_pid.join()
         else:
-            process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
-            process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y))
-
-            process_object_center.start()
+            process_set_servos = Process(target=set_servos, args=(obj_x, obj_y, center_x, center_y, idle_flag))
             process_set_servos.start()
-
-            process_object_center.join()
             process_set_servos.join()
+
+
+        process_object_center.join()
