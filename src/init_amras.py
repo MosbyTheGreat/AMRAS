@@ -1,6 +1,7 @@
 from math import ceil
 from multiprocessing import Manager
 from multiprocessing import Process
+from socket import timeout
 from imutils.video import VideoStream
 from pyimagesearch.objcenter import ObjCenter
 from pyimagesearch.pid import PID
@@ -140,6 +141,10 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
     # give the camera time to warm up
     time.sleep(5.0)
 
+    # shoot after x/10 seconds of being on target
+    aim_timeout = 5
+    aim_timeout_counter = aim_timeout
+
     # loop indefinitely
     while True:
         if search_flag.value == 0:
@@ -151,9 +156,14 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
             servo_position_y.value = smooth_move(error_y, servo_tilt, servo_position_y.value)
 
             if error_x == 0 and error_y == 0:
-                print("shoot!")
+                if aim_timeout_counter == 0:
+                    print("shoot")
+                    aim_timeout_counter = aim_timeout
+                else:
+                    aim_timeout_counter = aim_timeout_counter - 1
             else:
                 print(error_x, error_y)
+                aim_timeout_counter = aim_timeout
 
 
 def smooth_move(error, servo_nr, servo_position):
@@ -167,7 +177,8 @@ def smooth_move(error, servo_nr, servo_position):
 
 def search_mode(servo_position_x, servo_position_y, search_flag):
     moving_direction = -1
-    timeout_counter = 50
+    timeout = 50
+    timeout_counter = timeout
 
     while True:
         if search_flag.value == 1:
@@ -186,7 +197,7 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
             else:
                 timeout_counter = timeout_counter -1
         else:
-            timeout_counter = 50
+            timeout_counter = timeout
         time.sleep(0.1)
 
 
