@@ -21,24 +21,18 @@ servo_tilt = 0
 
 multiplier = 0.1 # for translation from error to servo movement
 servo_range = [1, 180]
+mid_offset = [0, 0] # if the camera is not mounted perfectly flat/centered
 
 #init GPIO Pins
 GPIO.setmode(GPIO.BCM)
 
-firing_pin_1 = 24
-firing_pin_2 = 23
-firing_pin_3 = 22
-firing_pin_4 = 27
+firing_pins = [22, 23, 24, 27]
+firing_counter = 0
 
-GPIO.setup(firing_pin_1, GPIO.OUT)
-GPIO.setup(firing_pin_2, GPIO.OUT)
-GPIO.setup(firing_pin_3, GPIO.OUT)
-GPIO.setup(firing_pin_4, GPIO.OUT)
+for pin in firing_pins:
+    GPIO.setp(pin, GPIO.OUT)
+    GPIO.output(pin, GPIO.LOW)
 
-GPIO.output(firing_pin_1, GPIO.LOW)
-GPIO.output(firing_pin_2, GPIO.LOW)
-GPIO.output(firing_pin_3, GPIO.LOW)
-GPIO.output(firing_pin_4, GPIO.LOW)
 
 # function to handle keyboard interrupt
 def signal_handler(sig, frame):
@@ -142,29 +136,31 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
     time.sleep(5.0)
 
     # shoot after x/10 seconds of being on target
-    aim_timeout = 0.5
+    aim_timeout = 2
     aim_timeout_counter = aim_timeout
 
     # loop indefinitely
     while True:
         if search_flag.value == 0:
-            error_x = obj_x.value - center_x.value
-            error_y = (obj_y.value - center_y.value) * -1
+            error_x = obj_x.value - center_x.value + mid_offset[0]
+            servo_position_x.value = smooth_move(error_x, servo_pan, servo_position_x.value)
 
-            if abs(error_x) < 5 and abs(error_y) < 5:
+            error_y = (obj_y.value - center_y.value + mid_offset[1]) * -1
+            servo_position_y.value = smooth_move(error_y, servo_tilt, servo_position_y.value)
+
+            if abs(error_x) < 10 and abs(error_y) < 10:
                 if aim_timeout_counter == 0:
-                    print("shoot")
+                    if (args["armed"]):
+                        fire()
+                    else:
+                        print("shoot")
                     aim_timeout_counter = aim_timeout
                     time.sleep(1.0)
                 else:
                     aim_timeout_counter = aim_timeout_counter - 1
             else:
-                servo_position_x.value = smooth_move(error_x, servo_pan, servo_position_x.value)
-                servo_position_y.value = smooth_move(error_y, servo_tilt, servo_position_y.value)
-
                 print(error_x, error_y)
                 aim_timeout_counter = aim_timeout
-
         time.sleep(0.1)
 
 
@@ -203,11 +199,21 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
         time.sleep(0.1)
 
 
+def fire():
+    print("this is an actual shot")
+    # if firing_counter < 4:
+    #     GPIO.output(firing_counter, GPIO.HIGH)
+    #     time.sleep(0.5)
+    #     GPIO.output(firing_counter, GPIO.LOW)
+    #     firing_counter = firing_counter + 1
+
+
 # check to see if this is the main body of execution
 if __name__ == "__main__":
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-c", "--cascade", type=str, required=True, help="path to input Haar cascade for face detection")
+    ap.add_argument("-a", "--armed", type=bool, required=False, default=False, help="whether to arm the turret")
     ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="whether to use PID or more basic movement") # PID not working at the moment
     args = vars(ap.parse_args())
 
