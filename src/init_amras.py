@@ -84,7 +84,7 @@ def obj_center(args, obj_x, obj_y, center_x, center_y, search_flag):
             search_flag.value = 1
 
         # display the frame to the screen
-        if args["verbose"]:
+        if args["image"]:
             cv2.imshow("AMRAS Viewfinder", frame)
             cv2.waitKey(1)
 
@@ -221,7 +221,8 @@ if __name__ == "__main__":
     ap.add_argument("-c", "--cascade", type=str, required=True, help="Path to input Haar cascade for detection")
     ap.add_argument("-a", "--armed", type=bool, required=False, default=False, help="Option to arm the turret")
     ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="Option to use PID or more basic movement") # PID not working at the moment
-    ap.add_argument("-v", "--verbose", type=bool, required=False, default=False, help="Option to show console output and draw images")
+    ap.add_argument("-v", "--verbose", type=bool, required=False, default=False, help="Option to show console output")
+    ap.add_argument("-i", "--image", type=bool, required=False, default=False, help="Option to draw image")
     args = vars(ap.parse_args())
 
     print("Welcome to AMRAS, your room will now be defended against nosy roommates.")
