@@ -28,7 +28,6 @@ mid_offset = [0, 0] # if the camera is not mounted perfectly flat/centered
 GPIO.setmode(GPIO.BCM)
 
 firing_pins = [22, 23, 24, 27]
-firing_counter = 0
 
 for pin in firing_pins:
     GPIO.setup(pin, GPIO.OUT)
@@ -141,6 +140,8 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
     aim_timeout = 2
     aim_timeout_counter = aim_timeout
 
+    firing_counter = 0
+
     # loop indefinitely
     while True:
         if search_flag.value == 0:
@@ -153,7 +154,7 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
             if abs(error_x) < 10 and abs(error_y) < 10:
                 if aim_timeout_counter == 0:
                     if (args["armed"]):
-                        fire()
+                        fire(firing_counter)
                     else:
                         print("Shoot!")
                     aim_timeout_counter = aim_timeout
@@ -204,7 +205,7 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
         time.sleep(0.1)
 
 
-def fire():
+def fire(firing_counter):
     if firing_counter < 4:
         GPIO.output(firing_counter, GPIO.HIGH)
         time.sleep(0.5)
