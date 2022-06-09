@@ -1,3 +1,4 @@
+from ast import arg
 from math import ceil
 from multiprocessing import Manager
 from multiprocessing import Process
@@ -30,7 +31,7 @@ firing_pins = [22, 23, 24, 27]
 firing_counter = 0
 
 for pin in firing_pins:
-    GPIO.setp(pin, GPIO.OUT)
+    GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, GPIO.LOW)
 
 
@@ -83,8 +84,9 @@ def obj_center(args, obj_x, obj_y, center_x, center_y, search_flag):
             search_flag.value = 1
 
         # display the frame to the screen
-        cv2.imshow("Pan-Tilt Face Tracking", frame)
-        cv2.waitKey(1)
+        if args["verbose"]:
+            cv2.imshow("AMRAS Viewfinder", frame)
+            cv2.waitKey(1)
 
 
 def pid_process(output, p, i, d, obj_coord, center_coord):
@@ -153,13 +155,14 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
                     if (args["armed"]):
                         fire()
                     else:
-                        print("shoot")
+                        print("Shoot!")
                     aim_timeout_counter = aim_timeout
                     time.sleep(1.0)
                 else:
                     aim_timeout_counter = aim_timeout_counter - 1
             else:
-                print(error_x, error_y)
+                if args["verbose"]:
+                    print(error_x, error_y)
                 aim_timeout_counter = aim_timeout
         time.sleep(0.1)
 
@@ -193,6 +196,8 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
                     kit.servo[servo_pan].angle = current_pos + moving_direction
                     servo_position_x.value = current_pos + moving_direction
             else:
+                if args["verbose"]:
+                    print(timeout_counter)
                 timeout_counter = timeout_counter -1
         else:
             timeout_counter = timeout
@@ -200,22 +205,34 @@ def search_mode(servo_position_x, servo_position_y, search_flag):
 
 
 def fire():
-    print("this is an actual shot")
-    # if firing_counter < 4:
-    #     GPIO.output(firing_counter, GPIO.HIGH)
-    #     time.sleep(0.5)
-    #     GPIO.output(firing_counter, GPIO.LOW)
-    #     firing_counter = firing_counter + 1
+    if firing_counter < 4:
+        GPIO.output(firing_counter, GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(firing_counter, GPIO.LOW)
+        firing_counter = firing_counter + 1
+        if args["verbose"]:
+            print("Projectile", firing_counter + 1, "fired!")
 
 
 # check to see if this is the main body of execution
 if __name__ == "__main__":
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-c", "--cascade", type=str, required=True, help="path to input Haar cascade for face detection")
-    ap.add_argument("-a", "--armed", type=bool, required=False, default=False, help="whether to arm the turret")
-    ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="whether to use PID or more basic movement") # PID not working at the moment
+    ap.add_argument("-c", "--cascade", type=str, required=True, help="Path to input Haar cascade for detection")
+    ap.add_argument("-a", "--armed", type=bool, required=False, default=False, help="Option to arm the turret")
+    ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="Option to use PID or more basic movement") # PID not working at the moment
+    ap.add_argument("-v", "--verbose", type=bool, required=False, default=False, help="Option to show console output and draw images")
     args = vars(ap.parse_args())
+
+    print("Welcome to AMRAS, your room will now be defended against nosy roommates.")
+    if args["pid"]:
+        print("PID movement will be used.")
+    else:
+        print("Basic pan/tilt movement will be used.")
+    if args["armed"]:
+        print("Weapon system is armed and ready.")
+    else:
+        print("Weapons are not armed, AMRAS will only work as a high-tech scarecrow.")
 
     # set servos to startung position
     kit.servo[servo_pan].angle = 90
