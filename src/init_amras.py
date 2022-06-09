@@ -53,7 +53,7 @@ def signal_handler(sig, frame):
     sys.exit()
 
 
-def obj_center(args, obj_x, obj_y, center_x, center_y):
+def obj_center(args, obj_x, obj_y, center_x, center_y, idle_flag):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -84,6 +84,9 @@ def obj_center(args, obj_x, obj_y, center_x, center_y):
         if rect is not None:
             (x, y, w, h) = rect
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            idle_flag.Value = True
+        else:
+            idle_flag.Value = False
 
         # display the frame to the screen
         cv2.imshow("Pan-Tilt Face Tracking", frame)
@@ -119,7 +122,7 @@ def set_servos_pid(pan, tilt):
     # loop indefinitely
     while True:
         # the pan and tilt angles are reversed
-        pan_angle = (pan.value * -1) + 90
+        pan_angle = pan.value + 90
         tilt_angle = (tilt.value * -1) + 90
         print(pan_angle.__str__() + " " + tilt_angle.__str__())
 
@@ -140,11 +143,11 @@ def set_servos(obj_x, obj_y, center_x, center_y):
 
     # loop indefinitely
     while True:
-        time.sleep(0.2)
+        time.sleep(0.1)
         error_x = obj_x.value - center_x.value
         smooth_move(error_x, servo_pan)
         
-        error_y = (obj_y.value - center_y.value) *-1
+        error_y = (obj_y.value - center_y.value) * -1
         smooth_move(error_y, servo_tilt)
 
         print(error_x.__str__() + " " + error_y.__str__())
@@ -155,6 +158,27 @@ def smooth_move(error, servo_nr):
     if in_range(new_pos, servo_range[0], servo_range[1]):
         kit.servo[servo_nr].angle = new_pos
         servo_positions[servo_nr] = new_pos
+
+
+def idle_mode(idle_flag):
+    moving_direction = -1
+    timeout_counter = 500
+
+    while True:
+        if idle_flag:
+            if timeout_counter is 0:
+                current_pos = servo_positions[servo_pan]
+                if current_pos is 0 or current_pos is 180:
+                    moving_direction = moving_direction * -1
+                else:
+                    kit.servo[servo_pan].angle = current_pos + moving_direction
+                    servo_positions[servo_pan] = current_pos + moving_direction
+            else:
+                timeout_counter = -1
+        else:
+            timeout_counter = 50
+
+        time.sleep(0.1)
 
 
 # check to see if this is the main body of execution
@@ -193,6 +217,9 @@ if __name__ == "__main__":
         tilt_i = manager.Value("f", 0.0)
         tilt_d = manager.Value("f", 0.0)
 
+        # initialize idle flag
+        idle_flag = manager.Value("b", False)
+
         # we have 5 independent processes
         # 1. objectCenter  - finds/localizes the object
         # 2. panning       - PID control loop determines panning angle
@@ -202,7 +229,7 @@ if __name__ == "__main__":
         # 5. setServos     - drives the servos if not using PID, very basic
 
         if args["pid"]:
-            process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y))
+            process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y, idle_flag))
             process_panning = Process(target=pid_process, args=(pan, pan_p, pan_i, pan_d, obj_x, center_x))
             process_tilting = Process(target=pid_process, args=(tlt, tilt_p, tilt_i, tilt_d, obj_y, center_y))
             process_set_servos_pid = Process(target=set_servos_pid, args=(pan, tlt))
