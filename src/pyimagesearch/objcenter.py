@@ -26,7 +26,7 @@ class ObjCenter:
             face_y = int(y + (h / 2.0))
 
             # return the center (x, y)-coordinates of the face
-            print(str(face_x) + " " + str(face_y))
+            #print(str(face_x) + " " + str(face_y))
             return (face_x, face_y), rects[0]
 
         # otherwise no faces were found, so return the center of the

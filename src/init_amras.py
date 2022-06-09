@@ -145,10 +145,10 @@ def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_positio
         if search_flag.value == 0:
             time.sleep(0.1)
             error_x = obj_x.value - center_x.value
-            smooth_move(error_x, servo_pan, servo_position_x.value)
+            servo_position_x.value = smooth_move(error_x, servo_pan, servo_position_x.value)
             
             error_y = (obj_y.value - center_y.value) * -1
-            smooth_move(error_y, servo_tilt, servo_position_y.value)
+            servo_position_y.value = smooth_move(error_y, servo_tilt, servo_position_y.value)
 
             if error_x == 0 and error_y == 0:
                 print("shoot!")
@@ -160,7 +160,9 @@ def smooth_move(error, servo_nr, servo_position):
     new_pos = servo_position - ceil(error * multiplier)
     if in_range(new_pos, servo_range[0], servo_range[1]):
         kit.servo[servo_nr].angle = new_pos
-        servo_position = new_pos
+        return new_pos
+    else:
+        return servo_position
 
 
 def search_mode(servo_position_x, servo_position_y, search_flag):
