@@ -31,7 +31,6 @@ Relais: 1x 2,0x10mm
 
 ## TODOs
 
- - Finish code
  - Add build manual
 
 ## Feature Ideas
@@ -39,6 +38,7 @@ Relais: 1x 2,0x10mm
  - Stereo camera to calculate distances and trajectory of projectiles
  - Different kinds of projectiles
  - Better servos to allow for 360° coverage
+ - Live video feed to smartphone
 
 ## Credits
 
