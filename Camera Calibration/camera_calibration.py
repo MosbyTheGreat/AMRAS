@@ -29,6 +29,7 @@ def processImage(img):
 # process all images
 img_mask = './Images/??.jpg'  # default
 img_names = sorted(img_mask)
+print(img_names.count, 'images found')
 
 images = [ cv2.imread(fn,cv2.IMREAD_GRAYSCALE) for fn in img_names ]
 images = [ x for x in images if x is not None ] # filter empty images
