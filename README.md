@@ -1,7 +1,7 @@
 # AMRAS
 Anti-Mitbewohner-Raketen-Abwehr-System (engl. Anti Roommate Rocket Defence System)
 
-An automated turret, which uses a combination of a Raspberry Pi, a camera, some servos, trafos and rubbing alcohol
+An automated turret, which uses a combination of a Raspberry Pi, a camera, some servos, transformers and rubbing alcohol
 to propel rubber rockets into anyone's face who dares to enter its vicinity.
 
 ![AMRAS](./Images/AMRAS.JPG)
@@ -9,12 +9,12 @@ to propel rubber rockets into anyone's face who dares to enter its vicinity.
 ## Parts List
 
  - Raspberry Pi 3B (Good Luck finding one, but should also work with newer versions)  
- - A Power Supply: https://www.amazon.de/gp/product/B07DG16TKS/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1  
+ - Power Supply: https://www.amazon.de/gp/product/B07DG16TKS/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1  
  - Camera: https://de.aliexpress.com/item/32668508991.html  
  - Servo Controller: https://de.aliexpress.com/item/4000468996665.html  
  - 4x Transformer/Spark Generator: https://de.aliexpress.com/item/32872820437.html  
  - 2x Servo: https://de.aliexpress.com/item/32970493831.html  
- - 4-Band Relais: https://de.aliexpress.com/item/4001363470793.html  
+ - 4-Band Relay: https://de.aliexpress.com/item/4001363470793.html  
  - Some Cables: https://de.aliexpress.com/item/33060775595.html  
  - 3x Ball Bearing: https://www.amazon.de/gp/product/B076ZL83YN/ref=ppx_yo_dt_b_asin_title_o03_s00?ie=UTF8&psc=1  
  - 4x Mini Magnets for keeping the Lid shut: https://www.magnet-shop.net/neodym/quadermagnete/quadermagnet-10.0-x-5.0-x-3.0-mm-n40-nickel-haelt-1.4-kg  
