@@ -5,9 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # values
-camera_matrix = np.array([[1522.44073,  0,          1188.03566],
-                          [0,           1504.26034, 784.669829],
-                          [0,           0,          1]])
+camera_matrix = np.array([[1.52244073e+03,  0.00000000e+00, 1.18803566e+03]
+                          [0.00000000e+00,  1.50426034e+03, 7.84669829e+02]
+                          [0.00000000e+00,  0.00000000e+00, 1.00000000e+00]])
 dist_coefs = np.array([-0.31086836,  0.10644732,  0.0030072,  -0.0012158,  -0.01891462])
 
 print("camera matrix:\n", camera_matrix)
