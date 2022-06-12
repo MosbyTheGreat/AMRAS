@@ -57,7 +57,7 @@ def obj_center(args, obj_x, obj_y, center_x, center_y, search_flag, camera_matri
 
     # start the video stream and wait for the camera to warm up
     vs = VideoStream(usePiCamera=True).start()
-    time.sleep(2.0)
+    time.sleep(4.0)
 
     # initialize the object center finder
     obj = ObjCenter(args["cascade"])
