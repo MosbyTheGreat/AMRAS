@@ -32,9 +32,9 @@ for pin in firing_pins:
     GPIO.output(pin, GPIO.LOW)
 
 # camera parameters to undistort images
-camera_matrix = np.array([[1522.44073,  0,          1188.03566],
-                          [0,           1504.26034, 784.669829],
-                          [0,           0,          1]])
+camera_matrix = np.array([[1.52244073e+03,  0,              1.18803566e+03],
+                          [0,               1.50426034e+03, 7.84669829e+02],
+                          [0,               0,              1]])
 dist_coefs = np.array([-0.31086836,  0.10644732,  0.0030072,  -0.0012158,  -0.01891462])
 
 
