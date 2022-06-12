@@ -1,4 +1,4 @@
-from os import walk
+import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +28,7 @@ def processImage(img):
     return (corners.reshape(-1, 2), pattern_points)
 
 # process all images
-img_names = filenames = next(walk('./Images/'), (None, None, []))[2]  # [] if no file
+img_names = os.listdir('./Images/')
 
 images = [ cv2.imread(fn,cv2.IMREAD_GRAYSCALE) for fn in img_names ]
 images = [ x for x in images if x is not None ] # filter empty images
