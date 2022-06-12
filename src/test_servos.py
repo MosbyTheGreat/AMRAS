@@ -1,7 +1,24 @@
 import time
 from adafruit_servokit import ServoKit
-import adafruit_motor.servo
 import RPi.GPIO as GPIO
+
+# Servos
+kit = ServoKit(channels=16)
+
+kit.servo[0].angle = 0
+kit.servo[1].angle = 0
+time.sleep(2.0)
+
+kit.servo[0].angle = 90
+kit.servo[1].angle = 90
+time.sleep(2.0)
+
+kit.servo[0].angle = 180
+kit.servo[1].angle = 180
+time.sleep(2.0)
+
+kit.servo[0].angle = 90
+kit.servo[1].angle = 90
 
 # Relays
 GPIO.setmode(GPIO.BCM)
@@ -40,21 +57,3 @@ GPIO.output(Pin4, GPIO.HIGH)
 time.sleep(0.5)
 GPIO.output(Pin4, GPIO.LOW)
 time.sleep(2.0)
-
-# Servos
-kit = ServoKit(channels=16)
-
-kit.servo[0].angle = 0
-kit.servo[1].angle = 0
-time.sleep(2.0)
-
-kit.servo[0].angle = 90
-kit.servo[1].angle = 90
-time.sleep(2.0)
-
-kit.servo[0].angle = 180
-kit.servo[1].angle = 180
-time.sleep(2.0)
-
-kit.servo[0].angle = 90
-kit.servo[1].angle = 90
