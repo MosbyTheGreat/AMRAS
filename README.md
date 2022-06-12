@@ -4,6 +4,8 @@ Anti-Mitbewohner-Raketen-Abwehr-System (engl. Anti Roommate Rocket Defence Syste
 An automated turret, which uses a combination of a Raspberry Pi, a camera, some servos, transformers and rubbing alcohol
 to propel rubber rockets into anyone's face who dares to enter its vicinity.
 
+The build manual can be found [here](./Manual/AMRAS%20Build%20Manual.pdf).
+
 ![AMRAS](./Images/AMRAS.JPG)
 
 ## Parts List
