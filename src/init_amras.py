@@ -238,7 +238,7 @@ if __name__ == "__main__":
     ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="Option to use PID or more basic movement") # PID not working at the moment
     ap.add_argument("-v", "--verbose", type=bool, required=False, default=False, help="Option to show console output")
     ap.add_argument("-i", "--image", type=bool, required=False, default=False, help="Option to draw image")
-    ap.add_argument("-u", "--undistort", typ=bool, required=False, default=False, help="Option to undistort images")
+    ap.add_argument("-u", "--undistort", type=bool, required=False, default=False, help="Option to undistort images")
     args = vars(ap.parse_args())
 
     print("Welcome to AMRAS, your room will now be defended against nosy roommates.")
