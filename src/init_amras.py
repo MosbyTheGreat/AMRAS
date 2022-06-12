@@ -1,13 +1,12 @@
-from ast import arg
 from math import ceil
 from multiprocessing import Manager
 from multiprocessing import Process
-from socket import timeout
 from imutils.video import VideoStream
 from pyimagesearch.objcenter import ObjCenter
 from pyimagesearch.pid import PID
 from adafruit_servokit import ServoKit
 import RPi.GPIO as GPIO
+import numpy as np
 import argparse
 import signal
 import time
@@ -32,6 +31,12 @@ for pin in firing_pins:
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, GPIO.LOW)
 
+# camera parameters to undistort images
+camera_matrix = np.array([[1522.44073,  0,          1188.03566],
+                          [0,           1504.26034, 784.669829],
+                          [0,           0,          1]])
+dist_coefs = np.array([-0.31086836,  0.10644732,  0.0030072,  -0.0012158,  -0.01891462])
+
 
 # function to handle keyboard interrupt
 def signal_handler(sig, frame):
@@ -46,7 +51,7 @@ def signal_handler(sig, frame):
     sys.exit()
 
 
-def obj_center(args, obj_x, obj_y, center_x, center_y, search_flag):
+def obj_center(args, obj_x, obj_y, center_x, center_y, search_flag, camera_matrix, dist_coefs):
     # signal trap to handle keyboard interrupt
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -67,6 +72,9 @@ def obj_center(args, obj_x, obj_y, center_x, center_y, search_flag):
         (H, W) = frame.shape[:2]
         center_x.value = W // 2
         center_y.value = H // 2
+
+        if args["undistort"]:
+            frame = cv2.undistort(frame, camera_matrix, dist_coefs, None, camera_matrix)
 
         # find the object's location
         object_loc = obj.update(frame, (center_x.value, center_y.value))
@@ -230,6 +238,7 @@ if __name__ == "__main__":
     ap.add_argument("-p", "--pid", type=bool, required=False, default=False, help="Option to use PID or more basic movement") # PID not working at the moment
     ap.add_argument("-v", "--verbose", type=bool, required=False, default=False, help="Option to show console output")
     ap.add_argument("-i", "--image", type=bool, required=False, default=False, help="Option to draw image")
+    ap.add_argument("-u", "--undistort", typ=bool, required=False, default=False, help="Option to undistort images")
     args = vars(ap.parse_args())
 
     print("Welcome to AMRAS, your room will now be defended against nosy roommates.")
@@ -248,6 +257,8 @@ if __name__ == "__main__":
         print("AMRAS will report everythign in the console.")
     if args["image"]:
         print("Video feed will be drawn.")
+    if args["undistort"]:
+        print("Images will be undistorted.")
 
     print("------------------------------------------------------------------------")
 
@@ -280,7 +291,7 @@ if __name__ == "__main__":
         #                    on PID feedback to keep object in center
         # 5. setServos     - drives the servos if not using PID, very basic
 
-        process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y, search_flag))
+        process_object_center = Process(target=obj_center, args=(args, obj_x, obj_y, center_x, center_y, search_flag, camera_matrix, dist_coefs))
         process_search_mode = Process(target=search_mode, args=(servo_position_x, servo_position_y, search_flag))
         process_object_center.start()
         process_search_mode.start()
