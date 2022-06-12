@@ -128,6 +128,8 @@ def set_servos_pid(pan, tilt):
         if in_range(tilt_angle, servo_range[0], servo_range[1]):
             kit.servo[servo_tilt].angle = tilt_angle
 
+        time.sleep(0.1)
+
 
 def set_servos(obj_x, obj_y, center_x, center_y, servo_position_x, servo_position_y, search_flag):
     # signal trap to handle keyboard interrupt
