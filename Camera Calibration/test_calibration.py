@@ -3,6 +3,8 @@ import time
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import timeit
+
 
 # values
 camera_matrix = np.array([[1.52244073e+03,  0.00000000e+00, 1.18803566e+03]
@@ -22,8 +24,12 @@ images = [ cv2.imread('./Images/' + fn.__str__(),cv2.IMREAD_GRAYSCALE) for fn in
 images = [ x for x in images if x is not None ] # filter empty images
 
 for img in images:
+    start = timeit.default_timer()
     # remove the the lens distortions
     dst = cv2.undistort(img, camera_matrix, dist_coefs, None, camera_matrix)
+
+    stop = timeit.default_timer()
+    print('Time: ', stop - start)  
 
     # show image
     cv2.imshow("AMRAS Viewfinder", dst)
