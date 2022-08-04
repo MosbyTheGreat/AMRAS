@@ -36,6 +36,10 @@ Relais: 1x 2,0x10mm
  - Better servos to allow for 360° coverage
  - Live video feed to smartphone with manual control
 
+## TODO
+ - PID tuning
+ - Script for camera calibration
+
 ## Credits
 
 Initially inspired by this video:  
